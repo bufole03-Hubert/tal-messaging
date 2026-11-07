@@ -40,6 +40,7 @@ Application : http://localhost:8080 · santé : `/health`. Les identifiants seed
 4. `npm install` (installe Tailwind, les icônes Tabler et les polices, puis les copie dans `public/assets`) puis `npm run build`.
 5. `php database/migrate.php && php database/seed.php` (relancer le seed après chaque mise à jour : il synchronise les permissions).
 6. Ouvrir **http://localhost/tal-messaging/public/** (ou http://localhost/tal-messaging/, qui redirige vers `public/`).
+<img width="1366" height="768" alt="public_page" src="https://github.com/user-attachments/assets/b0fa575f-be3a-49e0-9a49-cc07c9aeeb66" />
 
 L'application détecte seule son sous-dossier (`/tal-messaging/public`) : routage, redirections, cookies, CSS/JS et appels AJAX en tiennent compte.
 Si besoin, forcer le préfixe avec `APP_BASE_PATH` dans `.env` (`/` pour une installation à la racine, ex. VirtualHost).
