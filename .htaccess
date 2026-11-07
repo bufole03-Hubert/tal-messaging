@@ -1,0 +1,5 @@
+# Confort XAMPP : http://localhost/tal-messaging/ redirige vers le dossier public/ (seul dossier exposé).
+# En production, pointez le DocumentRoot sur public/ ; ce fichier n'est alors jamais utilisé.
+Options -Indexes
+RewriteEngine On
+RewriteRule ^(?!public/)(.*)$ public/$1 [L,R=302]

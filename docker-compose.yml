@@ -1,0 +1,50 @@
+services:
+  web:
+    build: .
+    ports:
+      - "8080:80"
+    environment:
+      APP_ENV: ${APP_ENV:-production}
+      APP_DEBUG: ${APP_DEBUG:-false}
+      APP_URL: ${APP_URL:-http://localhost:8080}
+      APP_KEY: ${APP_KEY:?Lancez d'abord : php scripts/init-env.php}
+      APP_TIMEZONE: ${APP_TIMEZONE:-Africa/Lubumbashi}
+      TOTP_WINDOW: ${TOTP_WINDOW:-2}
+      ENFORCE_INTERNAL_2FA: ${ENFORCE_INTERNAL_2FA:-true}
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: ${DB_NAME:-tal_messaging}
+      DB_USER: ${DB_USER:-tal}
+      DB_PASSWORD: ${DB_PASSWORD:?Lancez d'abord : php scripts/init-env.php}
+      SEED_CEO_EMAIL: ${SEED_CEO_EMAIL:-ceo@talmessaging.local}
+      SEED_CEO_PASSWORD: ${SEED_CEO_PASSWORD:-}
+      SEED_DEMO_PASSWORD: ${SEED_DEMO_PASSWORD:-}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: ${DB_NAME:-tal_messaging}
+      MYSQL_USER: ${DB_USER:-tal}
+      MYSQL_PASSWORD: ${DB_PASSWORD:?Lancez d'abord : php scripts/init-env.php}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?Lancez d'abord : php scripts/init-env.php}
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    restart: unless-stopped
+
+  # TODO (modules Queues/Workers) : décommenter pour les files d'attente.
+  # redis:
+  #   image: redis:7-alpine
+  #   command: ["redis-server", "--requirepass", "${REDIS_PASSWORD}"]
+
+volumes:
+  db_data:

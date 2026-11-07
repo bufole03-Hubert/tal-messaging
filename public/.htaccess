@@ -1,0 +1,14 @@
+Options -Indexes -MultiViews
+RewriteEngine On
+
+# Bloque les fichiers cachés
+RewriteRule (^|/)\.(?!well-known) - [F]
+
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^ - [L]
+RewriteRule ^ index.php [L]
+
+<IfModule mod_headers.c>
+  Header always unset X-Powered-By
+  Header always set X-Content-Type-Options "nosniff"
+</IfModule>

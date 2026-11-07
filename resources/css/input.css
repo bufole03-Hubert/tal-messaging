@@ -1,0 +1,134 @@
+/* ---------- Polices locales (npm : @fontsource-variable/*, copiées par scripts/copy-assets.js) ---------- */
+@font-face {
+  font-family: 'Inter Variable'; font-style: normal; font-display: swap; font-weight: 100 900;
+  src: url('../fonts/inter-latin-ext-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Inter Variable'; font-style: normal; font-display: swap; font-weight: 100 900;
+  src: url('../fonts/inter-latin-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Plus Jakarta Sans Variable'; font-style: normal; font-display: swap; font-weight: 200 800;
+  src: url('../fonts/plus-jakarta-sans-latin-ext-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Plus Jakarta Sans Variable'; font-style: normal; font-display: swap; font-weight: 200 800;
+  src: url('../fonts/plus-jakarta-sans-latin-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { -webkit-text-size-adjust: 100%; }
+  body { @apply bg-canvas font-sans text-ink antialiased; font-feature-settings: 'cv11', 'ss01'; }
+  h1, h2, h3, h4 { @apply font-display tracking-tight; }
+  ::selection { background: rgb(var(--c-brand) / 0.25); }
+  :focus-visible { outline: 2px solid rgb(var(--c-brand)); outline-offset: 2px; }
+  * { scrollbar-width: thin; scrollbar-color: rgb(var(--c-line)) transparent; }
+  .ti { line-height: 1; }
+}
+
+@layer components {
+  /* ---------- Boutons ---------- */
+  .btn { @apply inline-flex h-10 select-none items-center justify-center gap-2 whitespace-nowrap rounded-xl px-4 text-sm font-semibold transition duration-150 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98]; }
+  .btn-primary { @apply bg-brand text-brandfg hover:opacity-90; }
+  .btn-soft { @apply bg-brand/10 text-brand hover:bg-brand/15; }
+  .btn-outline { @apply bg-surface text-ink ring-1 ring-inset ring-line hover:bg-surface2; }
+  .btn-ghost { @apply text-mute hover:bg-surface2 hover:text-ink; }
+  .btn-danger { @apply bg-red-600 text-white hover:bg-red-700; }
+  .btn-sm { @apply h-9 px-3; }
+  .btn-icon { @apply h-10 w-10 px-0; }
+
+  /* ---------- Champs ---------- */
+  .label { @apply mb-1.5 block text-[13px] font-medium text-ink; }
+  .hint { @apply mt-1.5 text-xs text-mute; }
+  .input { @apply block h-11 w-full rounded-xl border-0 bg-surface px-3.5 text-sm text-ink ring-1 ring-inset ring-line transition placeholder:text-mute/70 hover:ring-mute/40 focus:outline-none focus:ring-2 focus:ring-brand; }
+  .field { @apply relative; }
+  .field > .input { @apply pl-10; }
+  .field-icon { @apply pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-lg text-mute; }
+  .field-action { @apply absolute right-1.5 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-mute hover:bg-surface2 hover:text-ink; }
+  .field > .input.has-action { @apply pr-11; }
+
+  /* Zone de saisie du code 2FA */
+  .input-code { @apply text-center font-mono text-lg tracking-[0.35em]; }
+
+  /* Pastille numérotée des étapes (configuration 2FA) */
+  .step-dot { @apply mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand text-xs font-bold text-brandfg; }
+
+  /* ---------- Cartes, badges ---------- */
+  .card { @apply rounded-2xl bg-surface p-5 shadow-soft ring-1 ring-line md:p-6; }
+  .badge { @apply inline-flex items-center gap-1 rounded-full bg-surface2 px-2.5 py-0.5 text-xs font-medium text-mute; }
+  .badge-brand { @apply bg-brand/10 text-brand; }
+  .badge-ok { @apply bg-emerald-500/10 text-emerald-600 dark:text-emerald-400; }
+  .alert { @apply flex items-start gap-3 rounded-xl px-4 py-3 text-sm; }
+  .alert-warn { @apply bg-amber-500/10 text-amber-700 dark:text-amber-300; }
+  .alert-danger { @apply bg-red-500/10 text-red-700 dark:text-red-300; }
+  .alert-ok { @apply bg-emerald-500/10 text-emerald-700 dark:text-emerald-300; }
+
+  /* ---------- Navigation (sidebar) ---------- */
+  .nav-title { @apply px-3 pb-2 pt-5 text-[11px] font-semibold uppercase tracking-[0.08em] text-mute/80; }
+  .nav-item { @apply relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-mute transition hover:bg-surface2 hover:text-ink; }
+  .nav-item .ti { @apply text-[20px]; }
+  .nav-item[aria-current='page'] { @apply bg-brand/10 text-brand; }
+  .nav-item[aria-current='page']::before { content: ''; @apply absolute -left-3 top-2 bottom-2 w-1 rounded-r-full bg-brand; }
+
+  /* Sidebar réduite (desktop) : seulement les icônes */
+  @media (min-width: 768px) {
+    html[data-sidebar='collapsed'] #sidebar { width: 5rem; }
+    html[data-sidebar='collapsed'] #sidebar .collapsible { display: none; }
+    html[data-sidebar='collapsed'] #sidebar .nav-item { justify-content: center; padding-left: 0; padding-right: 0; }
+    html[data-sidebar='collapsed'] #sidebar .nav-title { visibility: hidden; height: 1rem; padding: 0; margin-top: 0.75rem; }
+    html[data-sidebar='collapsed'] #sidebar .brand-row { justify-content: center; padding-left: 0; padding-right: 0; }
+    html[data-sidebar='collapsed'] #sidebar .user-card { justify-content: center; }
+    html[data-sidebar='collapsed'] [data-collapse-icon] { transform: rotate(180deg); }
+  }
+
+  /* ---------- Menus déroulants ---------- */
+  .menu { @apply absolute z-40 mt-2 w-64 origin-top-right animate-pop-in rounded-2xl bg-surface p-1.5 shadow-pop ring-1 ring-line; }
+  .menu-item { @apply flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-medium text-ink transition hover:bg-surface2; }
+  .menu-item .ti { @apply text-lg text-mute; }
+  .menu-sep { @apply my-1.5 h-px bg-line; }
+
+  /* ---------- Sélecteur moderne (remplace <select>) ---------- */
+  .ui-select { @apply relative; }
+  .ui-select-btn { @apply flex h-11 w-full items-center justify-between gap-2 rounded-xl bg-surface px-3.5 text-left text-sm text-ink ring-1 ring-inset ring-line transition hover:ring-mute/40 focus:outline-none focus:ring-2 focus:ring-brand; }
+  .ui-select-menu { @apply absolute z-40 mt-2 max-h-64 w-full animate-pop-in overflow-auto rounded-xl bg-surface p-1.5 shadow-pop ring-1 ring-line; }
+  .ui-select-opt { @apply flex cursor-pointer items-center justify-between gap-2 rounded-lg px-3 py-2 text-sm text-ink; }
+  .ui-select-opt.is-active { @apply bg-surface2; }
+  .ui-select-opt[aria-selected='true'] { @apply font-semibold text-brand; }
+
+  /* ---------- Contrôle segmenté ---------- */
+  .seg { @apply inline-flex gap-1 rounded-xl bg-surface2 p-1; }
+  .seg-btn { @apply inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium text-mute transition hover:text-ink; }
+  .seg-btn[aria-pressed='true'] { @apply bg-surface text-ink shadow-soft; }
+
+  /* ---------- Sélecteur de couleur ---------- */
+  .swatch { @apply relative h-10 w-10 shrink-0 overflow-hidden rounded-xl ring-1 ring-inset ring-line; }
+  .swatch input[type='color'] { @apply absolute inset-0 h-full w-full cursor-pointer border-0 bg-transparent p-0; -webkit-appearance: none; appearance: none; }
+  .swatch input[type='color']::-webkit-color-swatch-wrapper { padding: 0; }
+  .swatch input[type='color']::-webkit-color-swatch { border: 0; }
+  .swatch input[type='color']::-moz-color-swatch { border: 0; }
+  .preset { @apply flex items-center gap-2 rounded-xl bg-surface px-3 py-2 text-sm font-medium text-ink ring-1 ring-inset ring-line transition hover:bg-surface2; }
+  .preset-dot { @apply h-4 w-4 rounded-full ring-1 ring-inset ring-black/10; }
+
+  /* ---------- Toasts ---------- */
+  .toast { @apply pointer-events-auto mb-2 flex animate-fade-up items-start gap-3 rounded-xl bg-surface px-4 py-3 text-sm text-ink shadow-pop ring-1 ring-line; }
+  .toast .ti { @apply mt-0.5 text-lg; }
+  .toast-ok .ti { @apply text-emerald-500; }
+  .toast-err .ti { @apply text-red-500; }
+}
+
+/* Le script de thème évite le flash : pas d'animation au premier rendu si l'utilisateur préfère moins de mouvement. */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+@layer components {
+  .input[aria-invalid='true'] { @apply ring-2 ring-red-500; }
+}

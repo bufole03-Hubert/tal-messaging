@@ -1,0 +1,8 @@
+.env
+node_modules/
+storage/logs/*
+!storage/logs/.gitkeep
+public/assets/css/app.css
+.DS_Store
+public/assets/vendor/
+public/assets/fonts/
