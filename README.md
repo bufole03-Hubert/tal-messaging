@@ -65,6 +65,8 @@ E2E_PASSWORD='...' php tests/e2e.php                # e2e (serveur lancé + base
 ## Sécurité intégrée
 
 Argon2id (bcrypt en repli) · sessions serveur en base (ID hashé, cookie HttpOnly/SameSite, régénération au login, expiration inactivité/absolue, liaison User-Agent) · CSRF sur toute écriture · 2FA TOTP maison (secret chiffré AES-256-GCM, anti-rejeu, codes de récupération, **QR code d’enrôlement généré localement dans le navigateur**, `public/assets/js/qr.js`), **obligatoire pour les comptes internes** · anti brute-force (compte + IP) · requêtes préparées uniquement · échappement systématique des vues · CSP stricte `default-src 'self'` (pas de script/style inline, pas de CDN) · en-têtes de sécurité · erreurs typées sans stack trace · audit append-only avec masquage des secrets · anti-escalade de rôles.
+<img width="1366" height="768" alt="2FA_via_qrcode" src="https://github.com/user-attachments/assets/e42e4ee0-2a92-49b3-94e8-85a194224493" />
+
 
 ## Isolation multi-tenant
 
