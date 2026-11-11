@@ -40,6 +40,17 @@ $canAppearance = in_array('manage_appearance', $user['permissions'], true);
         <?php endforeach; ?>
       </div>
 
+      <?php if (in_array('view_contacts', $user['permissions'], true)): ?>
+        <?php $sect = $section ?? ''; ?>
+        <p class="nav-title">Contacts</p>
+        <div class="space-y-1">
+          <a href="<?= e(url('/contacts')) ?>" class="nav-item" title="Contacts" <?= $sect === 'contacts' ? 'aria-current="page"' : '' ?>><?= icon('address-book') ?><span class="collapsible">Contacts</span></a>
+          <a href="<?= e(url('/contacts/groups')) ?>" class="nav-item" title="Groupes" <?= $sect === 'groups' ? 'aria-current="page"' : '' ?>><?= icon('users-group') ?><span class="collapsible">Groupes</span></a>
+          <a href="<?= e(url('/contacts/segments')) ?>" class="nav-item" title="Segments" <?= $sect === 'segments' ? 'aria-current="page"' : '' ?>><?= icon('filter') ?><span class="collapsible">Segments</span></a>
+          <a href="<?= e(url('/contacts/imports')) ?>" class="nav-item" title="Imports CSV" <?= $sect === 'imports' ? 'aria-current="page"' : '' ?>><?= icon('file-import') ?><span class="collapsible">Imports CSV</span></a>
+        </div>
+      <?php endif; ?>
+
       <p class="nav-title">Compte</p>
       <div class="space-y-1">
         <a href="<?= e(url('/security')) ?>" class="nav-item" title="Sécurité" <?= $page === 'security' ? 'aria-current="page"' : '' ?>>
@@ -125,5 +136,8 @@ $canAppearance = in_array('manage_appearance', $user['permissions'], true);
 
 <div id="toast" class="pointer-events-none fixed bottom-4 right-4 z-50 w-[calc(100%-2rem)] max-w-sm" role="status" aria-live="polite"></div>
 <script src="<?= asset('js/app.js') ?>" defer></script>
+<?php foreach (($scripts ?? []) as $js): ?>
+<script src="<?= asset((string) $js) ?>" defer></script>
+<?php endforeach; ?>
 </body>
 </html>

@@ -26,7 +26,16 @@ foreach ($files as $file) {
     // Les DDL MySQL ne sont pas transactionnels : chaque instruction est exécutée séparément.
     $sql = (string) preg_replace('/^\s*--.*$/m', '', (string) file_get_contents($file));
     foreach (array_filter(array_map('trim', explode(';', $sql))) as $statement) {
-        $pdo->exec($statement);
+        try {
+            $pdo->exec($statement);
+        } catch (PDOException $e) {
+            // Déjà appliqué (migration jouée à la main, ou exécution interrompue) : colonne / index / table existants.
+            if (in_array((int) ($e->errorInfo[1] ?? 0), [1050, 1060, 1061, 1826], true)) {
+                echo '  (déjà présent, ignoré : ' . $e->errorInfo[2] . ")\n";
+                continue;
+            }
+            throw $e;
+        }
     }
     Database::execute('INSERT INTO schema_migrations (name) VALUES (?)', [$name]);
 }

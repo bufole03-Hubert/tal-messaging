@@ -40,7 +40,17 @@ final class DashboardController extends Controller
                 $visible[$s] = $d;
             }
         }
-        return $this->view('dashboards/placeholder', [
+        $extra = [];
+        $template = 'dashboards/placeholder';
+        if ($slug === 'data') {
+            $template = 'dashboards/data';
+            $extra = \App\Modules\Contacts\Controllers\DataController::dashboardData($request) + [
+                'scripts' => ['js/ui.js', 'js/data-dashboard.js'],
+                'global' => \App\Tenancy\TenantContext::current()->global,
+                'canPurge' => $request->can('manage_data_retention') && $request->can('view_all_tenants'),
+            ];
+        }
+        return $this->view($template, $extra + [
             'title' => $all[$slug]['label'],
             'slug' => $slug,
             'dashboard' => $all[$slug],

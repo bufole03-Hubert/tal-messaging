@@ -75,6 +75,7 @@ final class AuthService
 
         $user = Database::first('SELECT id, organization_id, totp_secret, totp_last_step FROM users WHERE id = ? AND deleted_at IS NULL', [$uid]);
         $valid = false;
+        $replay = false;
         if ($user !== null) {
             $code = trim($code);
             if (preg_match('/^[a-z0-9]{5}-[a-z0-9]{5}$/i', $code)) {
@@ -89,6 +90,9 @@ final class AuthService
                 if ($step !== null) {
                     Database::execute('UPDATE users SET totp_last_step = ? WHERE id = ?', [$step, $uid]);
                     $valid = true;
+                } elseif ($secret !== null && Totp::isReplay($secret, $code, (int) $user['totp_last_step'], self::totpWindow())) {
+                    // Code correct mais déjà utilisé (ex. celui saisi à l'activation) : il faut le code suivant.
+                    $replay = true;
                 } elseif ($secret !== null) {
                     $off = Totp::clockOffset($secret, $code);
                     if ($off !== null) {
@@ -106,6 +110,12 @@ final class AuthService
                 Session::put('pending_2fa', $pending);
             }
             AuditService::log('auth.2fa_failed', 'user', $uid, [], $uid, $user['organization_id'] ?? null);
+            if ($replay) {
+                throw ApiException::unauthorized(
+                    'Ce code a déjà été utilisé. Attendez que l’application affiche le code suivant (moins de 30 secondes), puis saisissez-le.',
+                    'TWO_FACTOR_REPLAY'
+                );
+            }
             throw ApiException::unauthorized('Code de vérification invalide.', 'TWO_FACTOR_INVALID');
         }
         Session::forget('pending_2fa');

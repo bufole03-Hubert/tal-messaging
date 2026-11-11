@@ -30,7 +30,15 @@ final class Session
             'samesite' => 'Lax',
         ]);
         session_set_save_handler(new DbSessionHandler(), true);
-        session_start();
+        try {
+            $ok = @session_start();
+        } catch (\Throwable $e) {
+            $ok = false;
+        }
+        if (!$ok) {
+            // Cause quasi certaine : base inaccessible ou migrations non exécutées (table « sessions » absente).
+            throw new ApiException('SETUP_REQUIRED', 'Base de données non initialisée ou inaccessible. Lancez install.bat (ou « php database/migrate.php » puis « php database/seed.php »), et vérifiez DB_USER / DB_PASSWORD dans .env.', 503);
+        }
         self::$started = true;
         if (!isset($_SESSION['_csrf'])) {
             $_SESSION['_csrf'] = bin2hex(random_bytes(32));

@@ -103,3 +103,30 @@ Actions journalisées : `auth.login`, `auth.login_failed`, `auth.login_blocked`,
 | POST | `/api/theme/reset` | Revient à la palette d'origine |
 
 Jetons : `canvas`, `surface`, `surface2`, `line`, `ink`, `mute`, `brand`, `brandfg` (couleurs `#RRGGBB`).
+
+
+## Contacts (permission `view_contacts` en lecture, `manage_contacts` en écriture)
+Toutes les routes sont filtrées par organisation (ressource hors périmètre → 404). Un compte interne global doit fournir `organization_id` pour créer.
+
+| Méthode | Route | Description |
+|---|---|---|
+| GET | `/api/contacts` | Liste paginée. Filtres : `q`, `operator`, `status`, `country`, `source`, `tag`, `group_id`, `import_id`, `no_group`, `has_email`, `created_from`, `created_to`, `organization_id` (global) ; `sort` (`created_at`, `name`, `phone`), `dir`, `page`, `per_page` |
+| POST | `/api/contacts` | Créer `{phone, country?, first_name?, last_name?, email?, status?, tags?, group_ids?, attributes?}` → 409 `CONTACT_EXISTS` si le numéro existe |
+| GET/PUT/DELETE | `/api/contacts/{id}` | Fiche / modification / suppression (logique) |
+| GET | `/api/contacts/{id}/history` | Historique des modifications |
+| POST | `/api/contacts/bulk` | `{action: delete\|block\|unblock\|group_add\|group_remove\|tag_add\|tag_remove, ids[] ou rules, group_id?, tag?}` |
+| POST | `/api/contacts/count` | `{rules}` → nombre + échantillon |
+| GET | `/api/contacts/duplicates?by=phone_tail\|email\|name` · POST `/api/contacts/merge` `{keep_id, merge_ids[]}` | Doublons et fusion |
+| GET | `/api/contacts/stats` · `/api/contacts/tags` | Indicateurs, catalogue d'étiquettes |
+| GET | `/api/contacts/export` | CSV (permission `export_contacts`, audité) |
+| GET/POST/PUT/DELETE | `/api/contact-groups[/{id}]` | Groupes `{name, description?}` |
+| GET/POST/PUT/DELETE | `/api/segments[/{id}]` | Segments `{name, description?, rules}` ; `rules = {match: all\|any, conditions:[{field, op, value}]}` |
+| GET | `/api/contact-imports` · `/api/contact-imports/{id}` | Historique / progression |
+| POST | `/api/contact-imports` | Envoi (multipart, champ `file`) → aperçu et mappage suggéré |
+| POST | `/api/contact-imports/{id}/start` | `{mapping:{phone,first_name,last_name,email,country,tags,custom:[{key,column}]}, options:{duplicate_mode: skip\|update\|merge, default_country, group_id?, new_group_name?, tags?}}` |
+| POST | `/api/contact-imports/{id}/process` | Traite un lot ; à rappeler tant que `status = processing` |
+| POST | `/api/contact-imports/{id}/cancel` | Annule |
+| GET | `/api/contact-imports/{id}/errors` · `/errors.csv` | Lignes rejetées (`kind=invalid\|duplicate`) / CSV pour correction |
+
+## Data & Compliance (`access_dashboard_data`)
+`GET /api/data/stats`, `GET/PUT /api/data/retention` (écriture : `manage_data_retention`), `POST /api/data/purge` (interne global).

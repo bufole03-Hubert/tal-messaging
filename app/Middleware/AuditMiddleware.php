@@ -49,7 +49,7 @@ final class AuditMiddleware implements MiddlewareInterface
                 $denied && !$mutating ? $route . '.denied' : $route,
                 $request->attributes['audit_resource_type'] ?? null,
                 $request->attributes['audit_resource_id'] ?? ($request->params['id'] ?? $request->params['key'] ?? null),
-                ['status' => $status, 'params' => $request->params, 'input' => $mutating ? $request->body : []],
+                ['status' => $status, 'params' => $request->params, 'input' => ($mutating && empty($request->attributes['audit_no_input'])) ? $request->body : []],
                 is_array($user) ? (int) $user['id'] : null,
                 $request->attributes['audit_org'] ?? (is_array($user) ? $user['organization_id'] : null),
             );

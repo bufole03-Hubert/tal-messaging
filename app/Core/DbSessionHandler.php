@@ -25,6 +25,16 @@ final class DbSessionHandler implements \SessionHandlerInterface
 
     public function write(string $id, string $data): bool
     {
+        try {
+            return $this->persist($id, $data);
+        } catch (\Throwable $e) {
+            \App\Support\Logger::error('Écriture de session impossible : ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    private function persist(string $id, string $data): bool
+    {
         $req = Request::current();
         $uid = isset($_SESSION['user_id']) ? (int) $_SESSION['user_id'] : null;
         $now = time();

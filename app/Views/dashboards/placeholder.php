@@ -28,13 +28,18 @@
 
 <h3 class="mb-4 text-xs font-semibold uppercase tracking-wider text-mute">Sections prévues</h3>
 <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-  <?php foreach ($dashboard['sections'] as $i => $section): ?>
-    <div class="card flex items-center justify-between gap-3 !p-4">
-      <div class="flex min-w-0 items-center gap-3">
-        <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-surface2 text-sm font-bold text-mute"><?= $i + 1 ?></span>
-        <span class="truncate font-medium"><?= e($section) ?></span>
-      </div>
-      <span class="badge shrink-0">À venir</span>
+  <?php
+$live = ['Contacts' => '/contacts', 'Imports CSV' => '/contacts/imports', 'Imports' => '/contacts/imports', 'Segments & listes' => '/contacts/segments'];
+$canContacts = in_array('view_contacts', $user['permissions'], true);
+?>
+<?php foreach ($dashboard['sections'] as $i => $section): ?>
+  <?php $href = ($canContacts && isset($live[$section])) ? url($live[$section]) : null; ?>
+  <<?= $href ? 'a href="' . e($href) . '"' : 'div' ?> class="card flex items-center justify-between gap-3 !p-4 <?= $href ? 'transition hover:ring-brand' : '' ?>">
+    <div class="flex min-w-0 items-center gap-3">
+      <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-surface2 text-sm font-bold text-mute"><?= $i + 1 ?></span>
+      <span class="truncate font-medium"><?= e($section) ?></span>
     </div>
-  <?php endforeach; ?>
+    <span class="badge shrink-0 <?= $href ? 'badge-ok' : '' ?>"><?= $href ? 'Ouvrir' : 'À venir' ?></span>
+  </<?= $href ? 'a' : 'div' ?>>
+<?php endforeach; ?>
 </div>

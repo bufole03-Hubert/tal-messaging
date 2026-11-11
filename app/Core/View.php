@@ -8,7 +8,14 @@ final class View
     /** @param array<string,mixed> $data */
     public static function render(string $template, array $data = [], ?string $layout = null): string
     {
-        $data['csrf'] = Session::csrfToken();
+        try {
+            $data['csrf'] = Session::csrfToken();
+        } catch (ApiException $e) {
+            if ($e->errorCode !== 'SETUP_REQUIRED') {
+                throw $e;
+            }
+            $data['csrf'] = ''; // page d'erreur d'installation : pas de session disponible
+        }
         $content = self::capture($template, $data);
         if ($layout === null) {
             return $content;

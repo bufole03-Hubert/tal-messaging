@@ -35,7 +35,36 @@
       }
       throw err;
     }
-    return payload?.data ?? payload;
+    return withMeta(payload);
+  }
+
+  // Les réponses paginées { data, meta } renvoient `data`, avec `meta` accessible en propriété non énumérable.
+  function withMeta(payload) {
+    const data = payload?.data ?? payload;
+    if (payload && payload.meta && data && typeof data === 'object') {
+      Object.defineProperty(data, 'meta', { value: payload.meta, enumerable: false });
+    }
+    return data;
+  }
+
+  // Envoi multipart (fichiers) : le Content-Type est posé par le navigateur (boundary).
+  async function upload(url, form) {
+    const res = await fetch(u(url), {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { Accept: 'application/json', 'X-CSRF-Token': csrfMeta()?.content || '', 'X-Requested-With': 'XMLHttpRequest' },
+      body: form,
+    });
+    let payload = null;
+    try { payload = await res.json(); } catch (_) { /* corps vide */ }
+    if (!res.ok) {
+      const err = new Error(payload?.error?.message || 'Erreur réseau.');
+      err.code = payload?.error?.code;
+      err.status = res.status;
+      err.fields = payload?.error?.details?.fields;
+      throw err;
+    }
+    return withMeta(payload);
   }
 
   function updateCsrf(token) {
@@ -405,7 +434,7 @@
       $('#twofa-setup')?.classList.add('hidden');
       $('#recovery-codes').textContent = r.recovery_codes.join('\n');
       $('#recovery').classList.remove('hidden');
-      toast('Double authentification activée.');
+      toast('Double authentification activée. À la prochaine connexion, saisissez le code suivant affiché par l’application (un code ne sert qu’une fois).');
     },
     async '2fa-disable'(form) {
       await api('POST', '/api/auth/2fa/disable', formData(form));
@@ -507,5 +536,5 @@
   applyMode(currentMode(), false);
   initAppearance();
 
-  window.TAL = { api, toast, url: u };
+  window.TAL = { api, upload, toast, url: u };
 })();

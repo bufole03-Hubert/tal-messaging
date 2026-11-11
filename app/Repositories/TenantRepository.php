@@ -50,6 +50,15 @@ abstract class TenantRepository
         return [$sql, $params];
     }
 
+    /**
+     * Clause de périmètre (tenant + non supprimé) pour les requêtes personnalisées d'un module.
+     * @return array{0:string,1:array<int,mixed>}
+     */
+    public function scope(): array
+    {
+        return $this->baseWhere();
+    }
+
     /** @return array<string,mixed>|null */
     public function find(int $id): ?array
     {
@@ -76,7 +85,7 @@ abstract class TenantRepository
         $total = (int) Database::scalar("SELECT COUNT(*) FROM {$this->from()} WHERE $where", $all);
         $offset = ($page - 1) * $perPage;
         $rows = Database::select(
-            "SELECT {$this->select} FROM {$this->from()} WHERE $where ORDER BY $col $direction LIMIT $perPage OFFSET $offset",
+            "SELECT {$this->select} FROM {$this->from()} WHERE $where ORDER BY $col $direction, {$this->alias}.id $direction LIMIT $perPage OFFSET $offset",
             $all
         );
         return ['data' => $rows, 'meta' => ['page' => $page, 'per_page' => $perPage, 'total' => $total]];

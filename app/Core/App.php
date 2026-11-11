@@ -39,6 +39,12 @@ final class App
         } catch (\Throwable $e) {
             $response = ErrorHandler::render($e, $request);
         }
+        // La session doit être écrite en base AVANT l'envoi de la réponse : sinon une requête parallèle du
+        // navigateur (feuille de style, script) relit une session encore vide et en crée une nouvelle,
+        // ce qui invalide le jeton CSRF de la page.
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            session_write_close();
+        }
         $response->send();
     }
 
@@ -58,7 +64,8 @@ final class App
             return $result instanceof Response ? $result : Response::data((array) $result);
         };
 
-        $stack = array_merge(['session'], $route['mw']);
+        // theme.css est publique et sans état : elle ne doit jamais toucher à la session.
+        $stack = $route['name'] === 'theme.css' ? $route['mw'] : array_merge(['session'], $route['mw']);
         $pipeline = array_reduce(
             array_reverse($stack),
             fn(callable $next, string $spec): callable => fn(Request $r): Response => $this->resolve($spec)->handle($r, $next),

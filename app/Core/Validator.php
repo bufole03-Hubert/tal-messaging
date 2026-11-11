@@ -47,6 +47,19 @@ final class Validator
                         }
                         $value = $i;
                         break;
+                    case 'array':
+                        if (!is_array($value)) {
+                            $errors[$field][] = 'Doit être une liste.';
+                            continue 2;
+                        }
+                        break;
+                    case 'date':
+                        $dt = is_string($value) ? \DateTimeImmutable::createFromFormat('!Y-m-d', $value) : false;
+                        if ($dt === false || $dt->format('Y-m-d') !== $value) {
+                            $errors[$field][] = 'Date invalide (AAAA-MM-JJ).';
+                            continue 2;
+                        }
+                        break;
                     case 'bool':
                         $b = filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
                         if ($b === null) {
@@ -68,12 +81,12 @@ final class Validator
                         }
                         break;
                     case 'min':
-                        if ((is_string($value) ? mb_strlen($value) : $value) < (int) $arg) {
+                        if ((is_string($value) ? mb_strlen($value) : (is_array($value) ? count($value) : $value)) < (int) $arg) {
                             $errors[$field][] = 'Valeur trop courte ou trop petite (min ' . $arg . ').';
                         }
                         break;
                     case 'max':
-                        if ((is_string($value) ? mb_strlen($value) : $value) > (int) $arg) {
+                        if ((is_string($value) ? mb_strlen($value) : (is_array($value) ? count($value) : $value)) > (int) $arg) {
                             $errors[$field][] = 'Valeur trop longue ou trop grande (max ' . $arg . ').';
                         }
                         break;

@@ -47,6 +47,26 @@ final class Totp
     }
 
     /**
+     * Vrai si le code est mathématiquement valide dans la fenêtre mais a déjà été consommé
+     * (pas de temps <= $lastStep). Sert uniquement à afficher un message clair : « attendez le prochain code ».
+     */
+    public static function isReplay(string $secret, string $code, int $lastStep, int $window = 1, ?int $now = null): bool
+    {
+        $code = preg_replace('/\s+/', '', $code) ?? '';
+        if ($lastStep <= 0 || !preg_match('/^\d{6}$/', $code)) {
+            return false;
+        }
+        $step = intdiv($now ?? time(), 30);
+        for ($i = -$window; $i <= $window; $i++) {
+            $s = $step + $i;
+            if ($s <= $lastStep && hash_equals(self::code($secret, $s * 30), $code)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Diagnostic : cherche à quel décalage d'horloge le code saisi aurait été valide.
      * @return int|null décalage en secondes (positif = l'appareil est en avance sur le serveur), ou null
      */

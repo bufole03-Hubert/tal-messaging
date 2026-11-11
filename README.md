@@ -38,7 +38,8 @@ Application : http://localhost:8080 · santé : `/health`. Les identifiants seed
 2. Créer la base (phpMyAdmin ou console) : `CREATE DATABASE tal_messaging CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;`
 3. Dans le dossier du projet : `php scripts/init-env.php`, puis éditer `.env` : `DB_HOST=127.0.0.1`, `DB_USER=root`, `DB_PASSWORD=` (vide par défaut sous XAMPP).
 4. `npm install` (installe Tailwind, les icônes Tabler et les polices, puis les copie dans `public/assets`) puis `npm run build`.
-5. `php database/migrate.php && php database/seed.php` (relancer le seed après chaque mise à jour : il synchronise les permissions).
+5. **Double-cliquer sur `install.bat`** (migrations + données initiales + diagnostic), ou en console `php database/migrate.php && php database/seed.php`. **Ne pas importer `migrate.php` / `seed.php` dans phpMyAdmin** : ce sont des scripts PHP, pas du SQL. En cas de souci : `php scripts/doctor.php`.
+   `php database/migrate.php && php database/seed.php` (relancer le seed après chaque mise à jour : il synchronise les permissions).
 6. Ouvrir **http://localhost/tal-messaging/public/** (ou http://localhost/tal-messaging/, qui redirige vers `public/`).
 <img width="1366" height="768" alt="public_page" src="https://github.com/user-attachments/assets/b0fa575f-be3a-49e0-9a49-cc07c9aeeb66" />
 
@@ -54,6 +55,20 @@ Prérequis Apache : `mod_rewrite` activé et `AllowOverride All` (valeurs par d�
   8 couleurs par mode, préréglages, aperçu en direct, mode par défaut, réinitialisation. Les couleurs sont servies par `/theme.css`.
 - Les sélecteurs natifs `<select>` sont remplacés par un sélecteur moderne : ajouter `data-ui="select"` à un `<select>`.
 - Ajouter une icône : `icon('nom-tabler')` (catalogue : https://tabler.io/icons).
+
+## Module 2 — Contacts Engine
+
+**Mise à jour d'une installation existante** : `php database/migrate.php` (migration 004), `php database/seed.php` (synchronise les nouvelles permissions `view_contacts`, `export_contacts`, `manage_data_retention`), puis `npm run build` (nouveaux composants CSS).
+
+Pages : `/contacts`, `/contacts/groups`, `/contacts/segments`, `/contacts/imports` et le dashboard **Data & Compliance** (`/data`).
+
+- **Numéros** : normalisation E.164 (`app/Support/PhoneNumber.php`), opérateur RDC détecté par préfixe (`config/countries.php`, **à valider avec vos partenaires télécoms**).
+- **Import CSV** : envoi → mappage → traitement par lots de `contacts.import.chunk_size` lignes (reprenable, sans Redis) → rapport + CSV des rejets. Fichiers dans `storage/imports/{organisation}/` (non servis par Apache).
+- **Doublons** : à l'import (ignorer / mettre à jour / compléter), dans le fichier, et sur la base existante (fusion).
+- **Segments** : règles enregistrées (liste blanche de champs et d'opérateurs, SQL paramétré) avec compteur en direct.
+- **Export CSV** : permission `export_contacts`, chaque export est tracé dans l'audit.
+- **Conservation** : durées réglables dans le dashboard Data ; purge via le bouton (compte interne) ou `php scripts/purge-data.php` (à planifier chaque nuit).
+- Limites d'import (taille, lignes) : `config/contacts.php` ; côté PHP, `upload_max_filesize` et `post_max_size` doivent être au moins égales.
 
 ## Tests
 
